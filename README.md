@@ -16,7 +16,6 @@ This project is a 3D visualization of a mini solar system, created using C++ and
 * **Custom Shaders (GLSL):**
     * Vertex shader for 3D transformations (model, view, projection).
     * Fragment shader for basic object coloring (colors set via uniforms).
-    * *(Note: A unique shader for a Sun pulsing/glow effect was planned as per assignment requirements but might be implemented separately or as a future enhancement from the current single-shader setup used for distinct coloring).*
 * **Matrix Transformations:** Extensive use of the GLM (OpenGL Mathematics) library for:
     * **Model matrices:** To position, scale, and rotate each celestial body.
     * **View matrix:** To control the camera's position and orientation.
