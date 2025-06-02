@@ -1,0 +1,39 @@
+# Build directory (CMake output)
+build/
+Build/
+BUILD/
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Object files
+*.o
+*.obj
+
+# Libraries / DLLs that are products of the build or local only
+# If glfw3.dll is copied to build by CMake, this will ignore it there.
+# If you have essential DLLs in a 'libs' folder you *want* to commit,
+# you might need to adjust this or use more specific paths.
+*.dll
+*.so
+*.dylib
+
+# IDE-specific files
+.vscode/
+*.suo
+*.user
+*.sln.docstates
+
+# Log files
+*.log
+
+# CMake generated files in source (if any, usually in build)
+CMakeCache.txt
+CMakeFiles/ # Be careful if you have a subdir named CMakeFiles you want to keep
+cmake_install.cmake
+Makefile # If generated in source, usually in build
+
+# User-specific files (e.g. from Visual Studio)
+*.vcxproj.user
