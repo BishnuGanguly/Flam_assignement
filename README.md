@@ -3,7 +3,7 @@
 
 ## 🚀 Description
 
-This project is a 3D visualization of a mini solar system, created using C++ and modern OpenGL (targeting concepts similar to ES 2.0+/3.0). It serves as a demonstration of core computer graphics principles including 3D transformations, custom shaders, camera manipulation, and object hierarchy. The scene features a central Sun, multiple planets orbiting at different speeds and distances, and a moon orbiting one of the planets.
+This project is a 3D visualization of a mini solar system, created using C++ and modern OpenGL . It serves as a demonstration of core computer graphics principles including 3D transformations, custom shaders, camera manipulation, and object hierarchy. The scene features a central Sun, multiple planets orbiting at different speeds and distances, and a moon orbiting one  planet.
 
 ## ✨ Features Implemented
 
@@ -49,7 +49,7 @@ This project is a 3D visualization of a mini solar system, created using C++ and
     * **GLAD:** Generated header (`glad.h`, `khrplatform.h`) and source (`glad.c`) files.
     * **GLM:** Header files.
 
-    *Note: The `CMakeLists.txt` in this repository is configured with specific paths for these libraries (e.g., `C:/Users/bishn/Downloads/...`). If you clone this repository, you will likely need to:*
+    *Note: The `CMakeLists.txt` in this repository is configured with specific paths for these libraries (e.g., `C:/Users/bishn/Downloads/...`). If you clone this repository, you will need to:*
     * *Download these libraries yourself.*
     * *Place them in the locations expected by `CMakeLists.txt`, OR*
     * *Modify the `set(GLFW_DIR ...)`, `set(GLAD_INCLUDE_DIR ...)`, and `set(GLM_INCLUDE_DIR ...)` paths in `CMakeLists.txt` to point to where you have stored these libraries on your system.*
