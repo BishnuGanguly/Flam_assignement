@@ -1,10 +1,7 @@
 #include <iostream> 
 #include<fstream>
 #include<sstream>
-#include<string>
-#include <cmath>
-#include<vector>
-
+#include<bits/stdc++.h>
 using namespace std;
 #include <glad/glad.h> 
 
@@ -230,7 +227,7 @@ const float MOON_SELF_ROTATION_SPEED = 2.5f;
 int main() {
     // 1. Initialize GLFW
     if (!glfwInit()) {
-        std::cerr << "Failed to initialize GLFW" << std::endl;
+        cerr << "Failed to initialize GLFW" << endl;
         return -1;
     }
     cout << "GLFW initialized successfully." << endl;
@@ -255,7 +252,7 @@ int main() {
     // This function will be called whenever the window is resized.
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     
-    // NEW: Register mouse callbacks
+    // Register mouse callbacks
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetCursorPosCallback(window, mouse_cursor_position_callback);
     glfwSetScrollCallback(window, scroll_callback);
@@ -288,32 +285,32 @@ int main() {
    
 
 
-    string vertexShaderCode = loadShaderSourceFromFile("../shaders/triangle.vert"); // Path relative to build dir
-    string fragmentShaderCode = loadShaderSourceFromFile("../shaders/triangle.frag"); // Path relative to build dir
+    string planetVertexShaderCode = loadShaderSourceFromFile("../shaders/triangle.vert"); // Path relative to build dir
+    string planetFragmentShaderCode = loadShaderSourceFromFile("../shaders/triangle.frag"); // Path relative to build dir
 
 
-    if (vertexShaderCode.empty() || fragmentShaderCode.empty()) {
+    if (planetVertexShaderCode.empty() || planetFragmentShaderCode.empty()) {
     std::cerr << "Failed to load shader files. Exiting." << std::endl;
     glfwTerminate();
     return -1;
    }
 
-   const char *vertexShaderSource = vertexShaderCode.c_str();
-   const char *fragmentShaderSource = fragmentShaderCode.c_str();
+   const char *pvShaderSource = planetVertexShaderCode.c_str();
+   const char *pfShaderSource = planetFragmentShaderCode.c_str();
 
 
     //compile and link shaders
     //vertex shader
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader,1,&vertexShaderSource,NULL);
-    glCompileShader(vertexShader);
+    unsigned int planetVertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(planetVertexShader,1,&pvShaderSource,NULL);
+    glCompileShader(planetVertexShader);
 
     // Check for shader compile errors
     int success;
     char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(planetVertexShader, GL_COMPILE_STATUS, &success);
     if (!success) {
-    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+    glGetShaderInfoLog(planetVertexShader, 512, NULL, infoLog);
          cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << endl;
      } else {
          cout << "Vertex shader compiled successfully." << endl;
@@ -321,13 +318,13 @@ int main() {
 
 
     // Fragment Shader
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
+    unsigned int planetFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(planetFragmentShader, 1, &pfShaderSource, NULL);
+    glCompileShader(planetFragmentShader);
     // Check for shader compile errors
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(planetFragmentShader, GL_COMPILE_STATUS, &success);
     if (!success) {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        glGetShaderInfoLog(planetFragmentShader, 512, NULL, infoLog);
         cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << endl;
     } else {
         cout << "Fragment shader compiled successfully." << endl;
@@ -335,58 +332,89 @@ int main() {
 
     
     //Link shaders into  shader program
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram,vertexShader);
-    glAttachShader(shaderProgram,fragmentShader);
-    glLinkProgram(shaderProgram);
+    unsigned int planetShaderProgram = glCreateProgram();
+    glAttachShader(planetShaderProgram,planetVertexShader);
+    glAttachShader(planetShaderProgram,planetFragmentShader);
+    glLinkProgram(planetShaderProgram);
     // Check for linking errors
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    glGetProgramiv(planetShaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+        glGetProgramInfoLog(planetShaderProgram, 512, NULL, infoLog);
         std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     } else {
         std::cout << "Shader program linked successfully." << std::endl;
     }
     // Shaders are now linked into the program, so we don't need the individual shader objects anymore.
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    glDeleteShader(planetVertexShader);
+    glDeleteShader(planetFragmentShader);
     
      // Get the location of the 'ourColor' uniform in the shader program
-     int ourColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-     if (ourColorLocation == -1) {
+     int planetOurColorLoc = glGetUniformLocation(planetShaderProgram, "ourColor");
+     if (planetOurColorLoc == -1) {
          cerr << "Warning: uniform 'ourColor' not found in shader!" << endl;
      } else {
-         cout << "'ourColor' uniform location: " << ourColorLocation << endl;
+         cout << "'ourColor' uniform location: " << planetOurColorLoc << endl;
      }
      
     // NEW: Get the location of the 'model' matrix uniform
-    int modelLoc = glGetUniformLocation(shaderProgram, "model");
-    if (modelLoc == -1) {
+    int planetModelLoc = glGetUniformLocation(planetShaderProgram, "model");
+    if (planetModelLoc == -1) {
         std::cerr << "Warning: uniform 'model' not found in shader!" << std::endl;
     } else {
-        std::cout << "'model' uniform location: " << modelLoc << std::endl;
+        std::cout << "'model' uniform location: " << planetModelLoc << std::endl;
     }
     
 
 
      // NEW: Get locations for view and projection matrices
-     int viewLoc = glGetUniformLocation(shaderProgram, "view");
-     if (viewLoc == -1) {
+     int planetViewLoc = glGetUniformLocation(planetShaderProgram, "view");
+     if (planetViewLoc == -1) {
          std::cerr << "Warning: uniform 'view' not found in shader!" << std::endl;
      } else {
-         std::cout << "'view' uniform location: " << viewLoc << std::endl;
+         std::cout << "'view' uniform location: " << planetViewLoc << std::endl;
      }
  
-     int projectionLoc = glGetUniformLocation(shaderProgram, "projection");
-     if (projectionLoc == -1) {
+     int planetProjectionLoc = glGetUniformLocation(planetShaderProgram, "projection");
+     if (planetProjectionLoc == -1) {
          std::cerr << "Warning: uniform 'projection' not found in shader!" << std::endl;
      } else {
-         std::cout << "'projection' uniform location: " << projectionLoc << std::endl;
+         std::cout << "'projection' uniform location: " << planetProjectionLoc << std::endl;
      }
 
 
+     // --- , ComLoadpile, and Link SUN Shader Program ---
+    std::string sunVertexShaderCode = loadShaderSourceFromFile("../shaders/sun.vert");
+    std::string sunFragmentShaderCode = loadShaderSourceFromFile("../shaders/sun.frag");
 
+    if (sunVertexShaderCode.empty() || sunFragmentShaderCode.empty()) { /* ... error handling ... */ return -1; }
 
+    const char *sunVShaderSource = sunVertexShaderCode.c_str();
+    const char *sunFShaderSource = sunFragmentShaderCode.c_str();
+
+    unsigned int sunVertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(sunVertexShader, 1, &sunVShaderSource, NULL);
+    glCompileShader(sunVertexShader);
+    // ... (Check for sunVertexShader compile errors) ...
+
+    unsigned int sunFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(sunFragmentShader, 1, &sunFShaderSource, NULL);
+    glCompileShader(sunFragmentShader);
+    // ... (Check for sunFragmentShader compile errors) ...
+
+    unsigned int sunShaderProgram = glCreateProgram();
+    glAttachShader(sunShaderProgram, sunVertexShader);
+    glAttachShader(sunShaderProgram, sunFragmentShader);
+    glLinkProgram(sunShaderProgram);
+    // ... (Check for sunShaderProgram link errors) ...
+    glDeleteShader(sunVertexShader);
+    glDeleteShader(sunFragmentShader);
+
+    // Get uniform locations for sunShaderProgram
+    int sunModelLoc = glGetUniformLocation(sunShaderProgram, "model");
+    int sunViewLoc = glGetUniformLocation(sunShaderProgram, "view");
+    int sunProjectionLoc = glGetUniformLocation(sunShaderProgram, "projection");
+    int sunTimeLoc = glGetUniformLocation(sunShaderProgram, "time"); // For the pulsing effect
+ 
 
     // --- Generate Sphere Data ---
     Sphere mySphere = createSphere(1.0f, 36, 18); // Radius 1, 36 sectors, 18 stacks
@@ -444,13 +472,13 @@ int main() {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Slightly darker background
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear depth buffer too
 
-        glUseProgram(shaderProgram);
+        glUseProgram(planetShaderProgram);
 
         // Update 'ourColor' uniform (pulsating green)
         float timeValue = (float)glfwGetTime();
        // float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-      //  if (ourColorLocation != -1) {
-       //     glUniform4f(ourColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+      //  if (planetOurColorLoc != -1) {
+       //     glUniform4f(planetOurColorLoc, 0.0f, greenValue, 0.0f, 1.0f);
        // }
 
 
@@ -458,16 +486,16 @@ int main() {
         // --- View Matrix (Camera Position/Orientation) ---
         // Position the camera a bit back from the origin to see the sphere
         // --- Calculate Camera Position for Orbital Camera ---
-       glm::vec3 cameraPos;
-       cameraPos.x = cameraDistance * cos(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch));
-       cameraPos.y = cameraDistance * sin(glm::radians(cameraPitch));
-       cameraPos.z = cameraDistance * sin(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch));
+        glm::vec3 cameraPos;
+        cameraPos.x = cameraDistance * cos(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch));
+        cameraPos.y = cameraDistance * sin(glm::radians(cameraPitch));
+        cameraPos.z = cameraDistance * sin(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch));
         glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f); // Looks at the origin
         glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f); // Head is up (set to 0,-1,0 to look upside-down)
         
         glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, cameraUp);
-        if (viewLoc != -1) {
-            glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        if (planetViewLoc != -1) {
+            glUniformMatrix4fv(planetViewLoc, 1, GL_FALSE, glm::value_ptr(view));
         }
 
         // --- Projection Matrix (Perspective) ---
@@ -478,28 +506,40 @@ int main() {
         float farPlane = 100.0f;
 
         glm::mat4 projection = glm::perspective(fov, aspectRatio, nearPlane, farPlane);
-        if (projectionLoc != -1) {
-            glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        if (planetProjectionLoc != -1) {
+            glUniformMatrix4fv(planetProjectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
         }
 
     
         glBindVertexArray(VAO); // Bind sphere VAO once, as both Sun and Planet use it
         
-         // Draw the Sun 
-         glm::mat4 sunModel = glm::mat4(1.0f);
-         sunModel = glm::scale(sunModel, glm::vec3(SUN_SCALE)); // Scale the Sun
-    
-         // sunModel = glm::rotate(sunModel, timeValue * glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //rotation of the sun optional
-         if (modelLoc != -1) {
-             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(sunModel));
-         }
-         // Set Sun's color (e.g., yellow)
-         if (ourColorLocation != -1) {
-             glUniform4f(ourColorLocation, 1.0f, 1.0f, 0.0f, 1.0f); // Yellow
-         }
-         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mySphere.indices.size()), GL_UNSIGNED_INT, 0);
- 
- 
+
+
+        
+         // --- Draw the Sun ---
+        glUseProgram(sunShaderProgram); // Use Sun's dedicated shader program
+        // Set Sun's uniforms
+        if (sunViewLoc != -1) glUniformMatrix4fv(sunViewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        if (sunProjectionLoc != -1) glUniformMatrix4fv(sunProjectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        if (sunTimeLoc != -1) glUniform1f(sunTimeLoc, timeValue); // Pass time to Sun shader
+
+        glm::mat4 sunModel = glm::mat4(1.0f);
+        sunModel = glm::scale(sunModel, glm::vec3(SUN_SCALE));
+        // sunModel = glm::rotate(sunModel, timeValue * glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        if (sunModelLoc != -1) glUniformMatrix4fv(sunModelLoc, 1, GL_FALSE, glm::value_ptr(sunModel));
+        
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mySphere.indices.size()), GL_UNSIGNED_INT, 0);
+
+        // --- Draw Planets and Moon (using planetShaderProgram) ---
+        glUseProgram(planetShaderProgram); // Switch to Planet's shader program
+        // Set common uniforms for planets (view, projection)
+        if (planetViewLoc != -1) glUniformMatrix4fv(planetViewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        if (planetProjectionLoc != -1) glUniformMatrix4fv(planetProjectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+
+
+
+
          // --- Draw Planet 1 ---
          glm::mat4 planet1Model = glm::mat4(1.0f);
          
@@ -517,12 +557,12 @@ int main() {
          // 4. Scale the planet
          planet1Model = glm::scale(planet1Model, glm::vec3(PLANET1_SCALE));
  
-         if (modelLoc != -1) {
-             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(planet1Model));
+         if (planetModelLoc != -1) {
+             glUniformMatrix4fv(planetModelLoc, 1, GL_FALSE, glm::value_ptr(planet1Model));
          }
          // Set Planet's color (e.g., blue)
-         if (ourColorLocation != -1) {
-             glUniform4f(ourColorLocation, 0.2f, 0.3f, 1.0f, 1.0f); // Blueish
+         if (planetOurColorLoc != -1) {
+             glUniform4f(planetOurColorLoc, 0.2f, 0.3f, 1.0f, 1.0f); // Blueish
          }
          glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mySphere.indices.size()), GL_UNSIGNED_INT, 0);
  
@@ -538,8 +578,8 @@ int main() {
         planet2Model = glm::rotate(planet2Model, planet2SelfRotationAngle, glm::vec3(0.0f, 1.0f, 0.0f)); // Self-rotation
         planet2Model = glm::scale(planet2Model, glm::vec3(PLANET2_SCALE)); // Scale
 
-        if (modelLoc != -1) glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(planet2Model));
-        if (ourColorLocation != -1) glUniform4f(ourColorLocation, 1.0f, 0.3f, 0.2f, 1.0f); // Reddish
+        if (planetModelLoc != -1) glUniformMatrix4fv(planetModelLoc, 1, GL_FALSE, glm::value_ptr(planet2Model));
+        if (planetOurColorLoc != -1) glUniform4f(planetOurColorLoc, 1.0f, 0.3f, 0.2f, 1.0f); // Reddish
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mySphere.indices.size()), GL_UNSIGNED_INT, 0);
 
         // --- Draw Moon (orbiting Planet 2) ---
@@ -557,8 +597,8 @@ int main() {
         // 3. Moon's scale
         moonModel = glm::scale(moonModel, glm::vec3(MOON_SCALE));
 
-        if (modelLoc != -1) glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(moonModel));
-        if (ourColorLocation != -1) glUniform4f(ourColorLocation, 0.7f, 0.7f, 0.7f, 1.0f); // Grey
+        if (planetModelLoc != -1) glUniformMatrix4fv(planetModelLoc, 1, GL_FALSE, glm::value_ptr(moonModel));
+        if (planetOurColorLoc != -1) glUniform4f(planetOurColorLoc, 0.7f, 0.7f, 0.7f, 1.0f); // Grey
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mySphere.indices.size()), GL_UNSIGNED_INT, 0);
 
          // glBindVertexArray(0); // Unbind VAO (optional if it's the last thing or only thing using this VAO)
@@ -571,7 +611,7 @@ int main() {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO); // NEW: Delete EBO
-    glDeleteProgram(shaderProgram);
+    glDeleteProgram(planetShaderProgram);
 
     // 6. Terminate GLFW (Clean up resources)
     cout << "Terminating GLFW." << endl;
@@ -580,16 +620,11 @@ int main() {
 }
 
 // This callback function is called whenever the window is resized.
-// It adjusts the OpenGL viewport to match the new window dimensions.
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    // Make sure the viewport matches the new window dimensions; note that width and 
-    // height will be significantly larger than specified on retina displays.
     cout << "Window resized to: " << width << "x" << height << endl;
     glViewport(0, 0, width, height);
 }
 
-// Process all input: query GLFW whether relevant keys are pressed/released
-// this frame and react accordingly
 void processInput(GLFWwindow *window) {
     // Check if the ESC key was pressed. If so, set the WindowShouldClose property to true.
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
