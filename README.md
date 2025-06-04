@@ -1,4 +1,3 @@
-# Flam_assignement
 # Mini Solar System Visualization in OpenGL C++
 
 ## 🚀 Description
