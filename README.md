@@ -6,7 +6,7 @@ This project is a 3D visualization of a mini solar system, created using C++ and
 
 ## ✨ Features Implemented
 
-* **Central Sun:** A static (or slowly rotating) Sun at the center of the system.
+* **Central Sun:** A static Sun at the center of the system.
 * **Orbiting Planets:** Two planets orbiting the Sun, each with:
     * Different orbital radii and speeds.
     * Self-rotation on their own axes at different speeds.
